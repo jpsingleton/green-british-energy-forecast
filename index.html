@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Greener Nights</title>
+    <meta name="viewport" content="width=device-width">
+    <style>
+        body {
+            color: rgb(187, 187, 187);
+            background-color: black;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        span,
+        a {
+            color: rgb(255, 255, 255);
+        }
+
+        #result {
+            color: rgb(127, 235, 19);
+            font-size: 2.5rem;
+        }
+
+        div {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .padded {
+            padding: 8px;
+        }
+
+        button {
+            background-color: black;
+            color: rgb(127, 235, 19);
+            border-color: rgb(127, 235, 19);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1>Greener Nights</h1>
+    </div>
+    <div id="result"><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /></div>
+
+    <div><button id="refresh-button" class="padded">Refresh</button></div>
+
+    <script>
+        async function showBestDay() {
+            const apiUrl = "https://api.octopus.energy/v1/graphql/";
+            const data = { query: "{ greennessForecast { validFrom greennessScore highlightFlag }}" };
+            let responseData = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            }).then(response => response.json()).then(data => data.data);
+            let html = "";
+            for (period of responseData.greennessForecast) {
+                date = new Date(period.validFrom);
+                scale = Array(Math.round(period.greennessScore / 10) + 1).join("-");
+                line = `${date.toDateString().substring(0, 3)} ${period.greennessScore}`;
+                if (period.highlightFlag) {
+                    line = `-> ${line} <-`;
+                }
+                html += `${line}<br />`;
+                html += `${scale}<br />`;
+            }
+            document.getElementById("result").innerHTML = html;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("refresh-button").addEventListener("click", function () {
+                showBestDay();
+            });
+            showBestDay();
+        });
+    </script>
+</body>
+
+</html>
