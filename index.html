@@ -13,19 +13,35 @@
             font-family: 'Courier New', Courier, monospace;
         }
 
-        span,
-        a {
-            color: rgb(255, 255, 255);
+        h1 {
+            font-size: 1.5rem;
         }
 
         #result {
+            font-size: 2rem;
+            height: 32rem;
+        }
+
+        .high {
             color: rgb(127, 235, 19);
-            font-size: 2.5rem;
+        }
+
+        .medium {
+            color: rgb(235, 174, 19);
+        }
+
+        .low {
+            color: rgb(235, 69, 19);
         }
 
         div {
             margin-top: 2rem;
             margin-bottom: 2rem;
+        }
+
+        p {
+            padding: 0;
+            margin: 0;
         }
 
         .padded {
@@ -34,10 +50,10 @@
 
         button {
             background-color: black;
-            color: rgb(127, 235, 19);
-            border-color: rgb(127, 235, 19);
+            color: rgb(187, 187, 187);
+            border-color: rgb(187, 187, 187);
             font-family: 'Courier New', Courier, monospace;
-            font-size: 2rem;
+            font-size: 1.5rem;
         }
     </style>
 </head>
@@ -46,19 +62,24 @@
     <div>
         <h1>Greener Nights</h1>
     </div>
-    <div id="result"><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /></div>
+    <div id="result"></div>
 
     <div><button id="refresh-button" class="padded">Refresh</button></div>
 
     <script>
         async function showBestDay() {
             const apiUrl = "https://api.octopus.energy/v1/graphql/";
-            const data = { query: "{ greennessForecast { validFrom greennessScore highlightFlag }}" };
+            const data = { query: "{ greennessForecast { validFrom greennessScore highlightFlag}}" };
             let responseData = await fetch(apiUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             }).then(response => response.json()).then(data => data.data);
+            const scores = responseData.greennessForecast.map(p => p.greennessScore);
+            const minScore = Math.min(...scores);
+            const maxScore = Math.max(...scores);
+            const low = ((maxScore - minScore) / 3) + minScore
+            const medium = ((maxScore - minScore) / 3) * 2 + minScore
             let html = "";
             for (period of responseData.greennessForecast) {
                 date = new Date(period.validFrom);
@@ -67,8 +88,14 @@
                 if (period.highlightFlag) {
                     line = `⇒ ${line} ⇐`;
                 }
-                html += `${line}<br />`;
-                html += `${scale}<br />`;
+                let className = "high";
+                if (period.greennessScore <= medium) {
+                    className = "medium";
+                }
+                if (period.greennessScore <= low) {
+                    className = "low";
+                }
+                html += `<p class="${className}">${line}<br />${scale}</p>`;
             }
             document.getElementById("result").innerHTML = html;
         }
