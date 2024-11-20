@@ -82,20 +82,27 @@
             const medium = ((maxScore - minScore) / 3) * 2 + minScore
             let html = "";
             for (period of responseData.greennessForecast) {
-                date = new Date(period.validFrom);
-                scale = Array(Math.round(period.greennessScore / 10) + 1).join("-");
-                line = `${date.toDateString().substring(0, 3)} ${period.greennessScore}`;
+                const date = new Date(period.validFrom);
+                const ds = date.toDateString().substring(0, 7);
+                let line = `${ds.substring(0, 3)} ${date.getDate()} ${ds.substring(4)}`;
                 if (period.highlightFlag) {
                     line = `⇒ ${line} ⇐`;
                 }
+                html += `<p>${line}</p>`;
+
                 let className = "high";
+                let symbol = "+";
                 if (period.greennessScore <= medium) {
                     className = "medium";
+                    symbol = "•";
                 }
                 if (period.greennessScore <= low) {
                     className = "low";
+                    symbol = "-";
                 }
-                html += `<p class="${className}">${line}<br />${scale}</p>`;
+                const scale = Array(Math.round(period.greennessScore / 10) + 1);
+                line = `${scale.join(symbol)} ${period.greennessScore} ${scale.join(symbol)}`;
+                html += `<p class="${className}">${line}</p>`;
             }
             document.getElementById("result").innerHTML = html;
         }
