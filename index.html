@@ -7,19 +7,20 @@
     <meta name="viewport" content="width=device-width">
     <style>
         body {
-            color: rgb(187, 187, 187);
+            color: rgb(216, 216, 216);
             background-color: black;
             text-align: center;
             font-family: 'Courier New', Courier, monospace;
         }
 
         h1 {
+            color: rgb(192, 204, 192);
             font-size: 1.5rem;
         }
 
         #result {
             font-size: 2rem;
-            height: 32rem;
+            min-height: 33rem;
         }
 
         .high {
@@ -50,7 +51,7 @@
 
         button {
             background-color: black;
-            color: rgb(187, 187, 187);
+            color: rgb(205, 207, 214);
             border-color: rgb(187, 187, 187);
             font-family: 'Courier New', Courier, monospace;
             font-size: 1.5rem;
@@ -85,11 +86,6 @@
                 const date = new Date(period.validFrom);
                 const ds = date.toDateString().substring(0, 7);
                 let line = `${ds.substring(0, 3)} ${date.getDate()} ${ds.substring(4)}`;
-                if (period.highlightFlag) {
-                    line = `⇒ ${line} ⇐`;
-                }
-                html += `<p>${line}</p>`;
-
                 let className = "high";
                 let symbol = "+";
                 if (period.greennessScore <= medium) {
@@ -100,6 +96,10 @@
                     className = "low";
                     symbol = "-";
                 }
+                if (period.highlightFlag) {
+                    line = `<span class="${className}">⇒</span> ${line} <span class="${className}">⇐</span>`;
+                }
+                html += `<p>${line}</p>`;
                 const scale = Array(Math.round(period.greennessScore / 10) + 1);
                 line = `${scale.join(symbol)} ${period.greennessScore} ${scale.join(symbol)}`;
                 html += `<p class="${className}">${line}</p>`;
