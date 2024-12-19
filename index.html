@@ -49,6 +49,10 @@
             padding: 8px;
         }
 
+        .hidden {
+            visibility: hidden;
+        }
+
         button {
             background-color: black;
             color: rgb(205, 207, 214);
@@ -64,9 +68,8 @@
         <h1>Greener Nights</h1>
     </div>
     <div id="result"></div>
-
     <div><button id="refresh-button" class="padded">Refresh</button></div>
-
+    <div><button id="xmas-button" class="padded hidden">Ho Ho Ho</button></div>
     <script>
         async function showBestDay() {
             const apiUrl = "https://api.octopus.energy/v1/graphql/";
@@ -103,12 +106,32 @@
                 const scale = Array(Math.round(period.greennessScore / 10) + 1);
                 line = `${scale.join(symbol)} ${period.greennessScore} ${scale.join(symbol)}`;
                 html += `<p class="${className}">${line}</p>`;
+                if (date.getDate() == 25 && date.getMonth() == 11) {
+                    document.getElementById("xmas-button").classList.remove("hidden");
+                }
             }
             document.getElementById("result").innerHTML = html;
         }
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("refresh-button").addEventListener("click", function () {
                 showBestDay();
+            });
+            document.getElementById("xmas-button").addEventListener("click", function () {
+                document.getElementById("result").innerHTML =
+                    `<p>*</p>
+                    <p class="low">XX</p>
+                    <p>||</p>
+                    <p class="low">-- XX --</p>
+                    <p>||</p>
+                    <p class="low">---- XX ----</p>
+                    <p>||</p>
+                    <p class="medium">•••••• XX ••••••</p>
+                    <p>||</p>
+                    <p class="high">++++++++ XX ++++++++</p>
+                    <p>||</p>
+                    <p class="high">++++++++++ XX ++++++++++</p>
+                    <p>||</p>
+                    <p class="low">- XX -</p>`;
             });
             showBestDay();
         });
