@@ -20,18 +20,18 @@
 
         #result {
             font-size: 2rem;
-            min-height: 33rem;
+            min-height: 34rem;
         }
 
-        .high {
+        .HIGH {
             color: rgb(127, 235, 19);
         }
 
-        .medium {
+        .MEDIUM {
             color: rgb(235, 174, 19);
         }
 
-        .low {
+        .LOW {
             color: rgb(235, 69, 19);
         }
 
@@ -73,32 +73,20 @@
     <script>
         async function showBestDay() {
             const apiUrl = "https://api.octopus.energy/v1/graphql/";
-            const data = { query: "{ greennessForecast { validFrom greennessScore highlightFlag}}" };
+            const data = { query: "{ greennessForecast { validFrom greennessScore highlightFlag greennessIndex}}" };
             let responseData = await fetch(apiUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             }).then(response => response.json()).then(data => data.data);
-            const scores = responseData.greennessForecast.map(p => p.greennessScore);
-            const minScore = Math.min(...scores);
-            const maxScore = Math.max(...scores);
-            const low = ((maxScore - minScore) / 3) + minScore
-            const medium = ((maxScore - minScore) / 3) * 2 + minScore
+
             let html = "";
             for (period of responseData.greennessForecast) {
                 const date = new Date(period.validFrom);
                 const ds = date.toDateString().substring(0, 7);
                 let line = `${ds.substring(0, 3)} ${date.getDate()} ${ds.substring(4)}`;
-                let className = "high";
-                let symbol = "+";
-                if (period.greennessScore <= medium) {
-                    className = "medium";
-                    symbol = "•";
-                }
-                if (period.greennessScore <= low) {
-                    className = "low";
-                    symbol = "-";
-                }
+                let className = period.greennessIndex;
+                let symbol = { "HIGH": "+", "MEDIUM": "•", "LOW": "-" }[className];
                 if (period.highlightFlag) {
                     line = `<span class="${className}">⇒</span> ${line} <span class="${className}">⇐</span>`;
                 }
@@ -112,26 +100,27 @@
             }
             document.getElementById("result").innerHTML = html;
         }
+
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("refresh-button").addEventListener("click", function () {
                 showBestDay();
             });
             document.getElementById("xmas-button").addEventListener("click", function () {
                 document.getElementById("result").innerHTML =
-                    `<p>*</p>
-                    <p class="low">XX</p>
-                    <p>||</p>
-                    <p class="low">-- XX --</p>
-                    <p>||</p>
-                    <p class="low">---- XX ----</p>
-                    <p>||</p>
-                    <p class="medium">•••••• XX ••••••</p>
-                    <p>||</p>
-                    <p class="high">++++++++ XX ++++++++</p>
-                    <p>||</p>
-                    <p class="high">++++++++++ XX ++++++++++</p>
-                    <p>||</p>
-                    <p class="low">- XX -</p>`;
+                    `                       <p>*</p>
+                                <p class="LOW">XX</p>
+                                            <p>||</p>
+                             <p class="LOW">-- XX --</p>
+                                            <p>||</p>
+                        <p class="MEDIUM">•••• XX ••••</p>
+                                            <p>||</p>
+                      <p class="MEDIUM">•••••• XX ••••••</p>
+                                            <p>||</p>
+                      <p class="HIGH">++++++++ XX ++++++++</p>
+                                            <p>||</p>
+                    <p class="HIGH">++++++++++ XX ++++++++++</p>
+                                            <p>||</p>
+                              <p class="LOW">- XX -</p>`;
             });
             showBestDay();
         });
