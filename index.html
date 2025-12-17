@@ -72,8 +72,8 @@
     <div><button id="xmas-button" class="padded hidden">Ho Ho Ho</button></div>
     <script>
         async function showBestDay() {
-            const apiUrl = "https://api.octopus.energy/v1/graphql/";
-            const data = { query: "{ greennessForecast { validFrom greennessScore highlightFlag greennessIndex}}" };
+            const apiUrl = "https://api.backend.octopus.energy/v1/graphql/";
+            const data = { query: "{ greenerNightsForecast { date greennessScore isGreenerNight greennessIndex } }" };
             let responseData = await fetch(apiUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -81,20 +81,20 @@
             }).then(response => response.json()).then(data => data.data);
 
             let html = "";
-            for (period of responseData.greennessForecast) {
-                const date = new Date(period.validFrom);
+            for (period of responseData.greenerNightsForecast) {
+                const date = new Date(period.date);
                 const ds = date.toDateString().substring(0, 7);
                 let line = `${ds.substring(0, 3)} ${date.getDate()} ${ds.substring(4)}`;
                 let className = period.greennessIndex;
                 let symbol = { "HIGH": "+", "MEDIUM": "•", "LOW": "-" }[className];
-                if (period.highlightFlag) {
+                if (period.isGreenerNight) {
                     line = `<span class="${className}">⇒</span> ${line} <span class="${className}">⇐</span>`;
                 }
                 html += `<p>${line}</p>`;
                 const scale = Array(Math.round(period.greennessScore / 10) + 1);
                 line = `${scale.join(symbol)} ${period.greennessScore} ${scale.join(symbol)}`;
                 html += `<p class="${className}">${line}</p>`;
-                if (date.getDate() == 25 && date.getMonth() == 11) {
+                if (date.getDate() == 24 && date.getMonth() == 11) {
                     document.getElementById("xmas-button").classList.remove("hidden");
                 }
             }
