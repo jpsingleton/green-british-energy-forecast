@@ -94,7 +94,7 @@
                 const scale = Array(Math.round(period.greennessScore / 10) + 1);
                 line = `${scale.join(symbol)} ${period.greennessScore} ${scale.join(symbol)}`;
                 html += `<p class="${className}">${line}</p>`;
-                if (date.getDate() == 24 && date.getMonth() == 11) {
+                if (date.getDate() == 25 && date.getMonth() == 11) {
                     document.getElementById("xmas-button").classList.remove("hidden");
                 }
             }
