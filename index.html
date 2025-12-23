@@ -88,7 +88,7 @@
                 let className = period.greennessIndex;
                 let symbol = { "HIGH": "+", "MEDIUM": "•", "LOW": "-" }[className];
                 if (period.isGreenerNight) {
-                    line = `<span class="${className}">⇒</span> ${line} <span class="${className}">⇐</span>`;
+                    line = `<span class="HIGH">⇒</span> ${line} <span class="HIGH">⇐</span>`;
                 }
                 html += `<p>${line}</p>`;
                 const scale = Array(Math.round(period.greennessScore / 10) + 1);
@@ -108,19 +108,19 @@
             document.getElementById("xmas-button").addEventListener("click", function () {
                 document.getElementById("result").innerHTML =
                     `                       <p>*</p>
-                                <p class="LOW">XX</p>
+                                <p class="LOW">A</p>
                                             <p>||</p>
-                             <p class="LOW">-- XX --</p>
+                             <p class="LOW">-- MX --</p>
                                             <p>||</p>
-                        <p class="MEDIUM">•••• XX ••••</p>
+                        <p class="MEDIUM">•••• EM ••••</p>
                                             <p>||</p>
-                      <p class="MEDIUM">•••••• XX ••••••</p>
+                      <p class="MEDIUM">•••••• RA ••••••</p>
                                             <p>||</p>
-                      <p class="HIGH">++++++++ XX ++++++++</p>
+                      <p class="HIGH">++++++++ RS ++++++++</p>
                                             <p>||</p>
-                    <p class="HIGH">++++++++++ XX ++++++++++</p>
+                    <p class="HIGH">++++++++++ Y! ++++++++++</p>
                                             <p>||</p>
-                              <p class="LOW">- XX -</p>`;
+                                <p class="LOW">:)</p>`;
             });
             showBestDay();
         });
