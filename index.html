@@ -72,14 +72,8 @@
     <div><button id="xmas-button" class="padded hidden">Ho Ho Ho</button></div>
     <script>
         async function showBestDay() {
-            const apiUrl = "https://api.backend.octopus.energy/v1/graphql/";
-            const data = { query: "{ greenerNightsForecast { date greennessScore isGreenerNight greennessIndex } }" };
-            let responseData = await fetch(apiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            }).then(response => response.json()).then(data => data.data);
-
+            const apiUrl = "https://jpsingleton.github.io/greener-nights-history/greener-nights-history.json";
+            let responseData = await fetch(apiUrl).then(response => response.json()).then(data => data.data);
             let html = "";
             for (period of responseData.greenerNightsForecast) {
                 const date = new Date(period.date);
@@ -89,6 +83,8 @@
                 let symbol = { "HIGH": "+", "MEDIUM": "•", "LOW": "-" }[className];
                 if (period.isGreenerNight) {
                     line = `<span class="HIGH">⇒</span> ${line} <span class="HIGH">⇐</span>`;
+                } else if (period.wasGreenerNight) {
+                    line = `<span>→</span> ${line} <span>←</span>`;
                 }
                 html += `<p>${line}</p>`;
                 const scale = Array(Math.round(period.greennessScore / 10) + 1);
